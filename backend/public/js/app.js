@@ -88,6 +88,9 @@ function showPanel(panelId) {
   document.querySelectorAll('.side-link').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.panel === panelId);
   });
+  document.querySelectorAll('.bnav-item').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.panel === panelId);
+  });
 
   if (panelId === 'history') loadHistory('all');
   if (panelId === 'overview') loadRecent();
