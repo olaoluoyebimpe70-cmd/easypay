@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Easy Pay — Fast ACH Banking</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- ========== NAV ========== -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#" class="logo" onclick="showPage('home')">
+        <span class="logo-icon">EP</span>
+        <span class="logo-text">Easy Pay</span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="#" onclick="showPage('home')" class="nav-link">Home</a>
+        <a href="#" onclick="showPage('features')" class="nav-link">Features</a>
+        <a href="#" onclick="showPage('signin')" class="nav-link" id="navSignIn">Sign In</a>
+        <a href="#" onclick="showPage('signup')" class="btn btn-primary btn-sm" id="navSignUp">Get Started</a>
+        <a href="#" onclick="logout()" class="nav-link hidden" id="navLogout">Log Out</a>
+      </div>
+      <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ========== HOME ========== -->
+  <section id="page-home" class="page active">
+    <header class="hero">
+      <div class="hero-content">
+        <h1>Banking that moves at the speed of life</h1>
+        <p class="hero-sub">Easy Pay brings fast, secure ACH transfers to everyday banking. Send, receive, and transfer money with confidence — all in one simple dashboard.</p>
+        <div class="hero-cta">
+          <button class="btn btn-primary btn-lg" onclick="showPage('signup')">Open Free Account</button>
+          <button class="btn btn-outline btn-lg" onclick="showPage('features')">See How It Works</button>
+        </div>
+        <div class="hero-stats">
+          <div class="stat">
+            <span class="stat-num">$0</span>
+            <span class="stat-label">Monthly fees</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">ACH</span>
+            <span class="stat-label">Same-day available</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">24/7</span>
+            <span class="stat-label">Account access</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="phone-mock">
+          <div class="phone-screen">
+            <div class="mock-header">Easy Pay</div>
+            <div class="mock-balance">$12,450.00</div>
+            <div class="mock-label">Available Balance</div>
+            <div class="mock-actions">
+              <div class="mock-btn">Send</div>
+              <div class="mock-btn">Receive</div>
+              <div class="mock-btn">Transfer</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="section features-preview">
+      <h2 class="section-title">Built for real money movement</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">↑</div>
+          <h3>Send Money</h3>
+          <p>Push funds to any US bank account via ACH. Enter routing & account numbers and you're done.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">↓</div>
+          <h3>Receive Money</h3>
+          <p>Share your Easy Pay details or request payment. Funds land directly in your account.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⇄</div>
+          <h3>Transfer Between Accounts</h3>
+          <p>Move money between your Easy Pay accounts or linked external accounts instantly.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📋</div>
+          <h3>Full History</h3>
+          <p>Every ACH transaction is logged with status, amount, and counterparty details.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section cta-section">
+      <div class="cta-box">
+        <h2>Ready to simplify your banking?</h2>
+        <p>Join thousands of Americans who trust Easy Pay for fast ACH transfers.</p>
+        <button class="btn btn-primary btn-lg" onclick="showPage('signup')">Create Your Account</button>
+      </div>
+    </section>
+  </section>
+
+  <!-- ========== FEATURES ========== -->
+  <section id="page-features" class="page">
+    <div class="container narrow">
+      <h1 class="page-title">Why Easy Pay</h1>
+      <p class="page-lead">We're a modern digital bank built around ACH — the backbone of US electronic payments.</p>
+
+      <div class="info-block">
+        <h2>ACH Capabilities</h2>
+        <ul class="check-list">
+          <li>Standard ACH (1–3 business days)</li>
+          <li>Same-day ACH (where available)</li>
+          <li>Credit and debit ACH entries</li>
+          <li>NACHA-compliant processing</li>
+          <li>Clear status tracking (Pending → Settled)</li>
+        </ul>
+      </div>
+
+      <div class="info-block">
+        <h2>Security & Compliance</h2>
+        <p>This is a <strong>demonstration website only</strong>. No real bank accounts, no real money movement, and no real customer data are processed. In a production environment, Easy Pay would partner with licensed banks and comply with all applicable federal banking regulations, including BSA/AML and consumer protection rules.</p>
+      </div>
+
+      <div class="info-block">
+        <h2>How transfers work (demo)</h2>
+        <ol class="steps">
+          <li>Sign up and get a simulated starting balance.</li>
+          <li>Use Send / Receive / Transfer from the dashboard.</li>
+          <li>Every action updates your local balance and appears in Account History.</li>
+          <li>Data is stored only in your browser (localStorage).</li>
+        </ol>
+      </div>
+
+      <button class="btn btn-primary" onclick="showPage('signup')">Get Started Free</button>
+    </div>
+  </section>
+
+  <!-- ========== SIGN UP ========== -->
+  <section id="page-signup" class="page">
+    <div class="auth-container">
+      <div class="auth-card">
+        <h1>Create your Easy Pay account</h1>
+        <p class="auth-sub">Free to open. No monthly fees.</p>
+        <form id="signupForm" onsubmit="handleSignup(event)">
+          <div class="form-group">
+            <label for="su-name">Full Name</label>
+            <input type="text" id="su-name" required placeholder="Jane Doe" autocomplete="name" />
+          </div>
+          <div class="form-group">
+            <label for="su-email">Email</label>
+            <input type="email" id="su-email" required placeholder="you@example.com" autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label for="su-password">Password</label>
+            <input type="password" id="su-password" required minlength="6" placeholder="At least 6 characters" autocomplete="new-password" />
+          </div>
+          <div class="form-group">
+            <label for="su-confirm">Confirm Password</label>
+            <input type="password" id="su-confirm" required minlength="6" placeholder="Repeat password" autocomplete="new-password" />
+          </div>
+          <p class="form-error hidden" id="signupError"></p>
+          <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+        </form>
+        <p class="auth-footer">Already have an account? <a href="#" onclick="showPage('signin')">Sign in</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SIGN IN ========== -->
+  <section id="page-signin" class="page">
+    <div class="auth-container">
+      <div class="auth-card">
+        <h1>Welcome back</h1>
+        <p class="auth-sub">Sign in to your Easy Pay dashboard</p>
+        <form id="signinForm" onsubmit="handleSignin(event)">
+          <div class="form-group">
+            <label for="si-email">Email</label>
+            <input type="email" id="si-email" required placeholder="you@example.com" autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label for="si-password">Password</label>
+            <input type="password" id="si-password" required placeholder="Your password" autocomplete="current-password" />
+          </div>
+          <p class="form-error hidden" id="signinError"></p>
+          <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+        </form>
+        <p class="auth-footer">New to Easy Pay? <a href="#" onclick="showPage('signup')">Create an account</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== DASHBOARD ========== -->
+  <section id="page-dashboard" class="page">
+    <div class="dashboard">
+      <aside class="sidebar">
+        <div class="sidebar-user">
+          <div class="avatar" id="userAvatar">EP</div>
+          <div>
+            <div class="user-name" id="userName">User</div>
+            <div class="user-email" id="userEmail">user@email.com</div>
+          </div>
+        </div>
+        <nav class="sidebar-nav">
+          <button class="side-link active" data-panel="overview" onclick="showPanel('overview')">Overview</button>
+          <button class="side-link" data-panel="send" onclick="showPanel('send')">Send Money</button>
+          <button class="side-link" data-panel="receive" onclick="showPanel('receive')">Receive Money</button>
+          <button class="side-link" data-panel="transfer" onclick="showPanel('transfer')">Transfer</button>
+          <button class="side-link" data-panel="history" onclick="showPanel('history')">Account History</button>
+        </nav>
+        <button class="btn btn-outline btn-sm logout-btn" onclick="logout()">Log Out</button>
+      </aside>
+
+      <main class="dash-main">
+        <!-- Overview -->
+        <div id="panel-overview" class="panel active">
+          <h1 class="dash-title">Good day, <span id="greetingName">there</span></h1>
+          <div class="balance-card">
+            <div class="balance-label">Available Balance</div>
+            <div class="balance-amount" id="balanceDisplay">$0.00</div>
+            <div class="balance-meta">Easy Pay Checking · ···· 4821</div>
+          </div>
+          <div class="quick-actions">
+            <button class="qa-btn" onclick="showPanel('send')"><span>↑</span> Send</button>
+            <button class="qa-btn" onclick="showPanel('receive')"><span>↓</span> Receive</button>
+            <button class="qa-btn" onclick="showPanel('transfer')"><span>⇄</span> Transfer</button>
+            <button class="qa-btn" onclick="showPanel('history')"><span>📋</span> History</button>
+          </div>
+          <h2 class="section-heading">Recent Activity</h2>
+          <div id="recentTx" class="tx-list"></div>
+        </div>
+
+        <!-- Send -->
+        <div id="panel-send" class="panel">
+          <h1 class="dash-title">Send Money</h1>
+          <p class="panel-desc">Send funds via ACH to any US bank account.</p>
+          <form id="sendForm" class="dash-form" onsubmit="handleSend(event)">
+            <div class="form-group">
+              <label for="send-name">Recipient Name</label>
+              <input type="text" id="send-name" required placeholder="John Smith" />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="send-routing">Routing Number</label>
+                <input type="text" id="send-routing" required pattern="[0-9]{9}" maxlength="9" placeholder="9 digits" />
+              </div>
+              <div class="form-group">
+                <label for="send-account">Account Number</label>
+                <input type="text" id="send-account" required placeholder="Account number" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="send-amount">Amount (USD)</label>
+              <input type="number" id="send-amount" required min="0.01" step="0.01" placeholder="0.00" />
+            </div>
+            <div class="form-group">
+              <label for="send-memo">Memo (optional)</label>
+              <input type="text" id="send-memo" placeholder="Rent, invoice #, etc." />
+            </div>
+            <p class="form-error hidden" id="sendError"></p>
+            <button type="submit" class="btn btn-primary">Send via ACH</button>
+          </form>
+        </div>
+
+        <!-- Receive -->
+        <div id="panel-receive" class="panel">
+          <h1 class="dash-title">Receive Money</h1>
+          <p class="panel-desc">Share your details or simulate an incoming ACH credit.</p>
+          <div class="receive-info">
+            <h3>Your Easy Pay Details</h3>
+            <div class="detail-row"><span>Account Holder</span><strong id="recvName">—</strong></div>
+            <div class="detail-row"><span>Routing Number</span><strong>021000021</strong> <small>(demo)</small></div>
+            <div class="detail-row"><span>Account Number</span><strong id="recvAccount">•••• 4821</strong></div>
+          </div>
+          <form id="receiveForm" class="dash-form" onsubmit="handleReceive(event)">
+            <h3>Simulate Incoming Payment</h3>
+            <div class="form-group">
+              <label for="recv-from">From (Name)</label>
+              <input type="text" id="recv-from" required placeholder="Acme Corp / Friend" />
+            </div>
+            <div class="form-group">
+              <label for="recv-amount">Amount (USD)</label>
+              <input type="number" id="recv-amount" required min="0.01" step="0.01" placeholder="0.00" />
+            </div>
+            <div class="form-group">
+              <label for="recv-memo">Memo (optional)</label>
+              <input type="text" id="recv-memo" placeholder="Payment for..." />
+            </div>
+            <button type="submit" class="btn btn-primary">Add Incoming ACH</button>
+          </form>
+        </div>
+
+        <!-- Transfer -->
+        <div id="panel-transfer" class="panel">
+          <h1 class="dash-title">Transfer Money</h1>
+          <p class="panel-desc">Move funds between your Easy Pay balance and a linked external account (simulated).</p>
+          <form id="transferForm" class="dash-form" onsubmit="handleTransfer(event)">
+            <div class="form-group">
+              <label for="tf-direction">Direction</label>
+              <select id="tf-direction" required>
+                <option value="out">Easy Pay → External Account</option>
+                <option value="in">External Account → Easy Pay</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="tf-amount">Amount (USD)</label>
+              <input type="number" id="tf-amount" required min="0.01" step="0.01" placeholder="0.00" />
+            </div>
+            <div class="form-group">
+              <label for="tf-memo">Memo (optional)</label>
+              <input type="text" id="tf-memo" placeholder="Internal transfer" />
+            </div>
+            <p class="form-error hidden" id="transferError"></p>
+            <button type="submit" class="btn btn-primary">Initiate Transfer</button>
+          </form>
+        </div>
+
+        <!-- History -->
+        <div id="panel-history" class="panel">
+          <h1 class="dash-title">Account History</h1>
+          <p class="panel-desc">All ACH activity on your Easy Pay account.</p>
+          <div class="history-filters">
+            <button class="filter-btn active" data-filter="all" onclick="filterHistory('all')">All</button>
+            <button class="filter-btn" data-filter="send" onclick="filterHistory('send')">Sent</button>
+            <button class="filter-btn" data-filter="receive" onclick="filterHistory('receive')">Received</button>
+            <button class="filter-btn" data-filter="transfer" onclick="filterHistory('transfer')">Transfers</button>
+          </div>
+          <div id="historyList" class="tx-list"></div>
+        </div>
+      </main>
+    </div>
+  </section>
+
+  <!-- Toast -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- Footer -->
+  <footer class="footer" id="mainFooter">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="logo-icon">EP</span> Easy Pay
+      </div>
+      <p class="footer-note">Demo only · Not a real bank · No real ACH processing · Data stays in your browser</p>
+      <p class="footer-copy">© 2026 Easy Pay (Demonstration)</p>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
