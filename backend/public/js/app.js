@@ -73,7 +73,7 @@ function showPage(pageId) {
   if (siM) siM.classList.toggle('hidden', loggedIn);
   if (suM) suM.classList.toggle('hidden', loggedIn);
   if (loM) loM.classList.toggle('hidden', !loggedIn);
-  $('mainFooter').classList.toggle('hidden', pageId === 'dashboard');
+  $('mainFooter').classList.toggle('hidden', ['dashboard','onboarding','consent','terms','privacy','signup','signin'].includes(pageId));
   $('navLinks').classList.remove('open');
   window.scrollTo(0, 0);
 
@@ -100,16 +100,134 @@ function showPanel(panelId) {
 
   if (panelId === 'history') loadHistory('all');
   if (panelId === 'overview') loadRecent();
+  if (panelId === 'transfer') renderPlaidCard();
   if (panelId === 'receive' && currentUser) {
     $('recvName').textContent = currentUser.name;
     $('recvAccount').textContent = '•••• ' + (currentUser.accountLast4 || '4821');
   }
 }
 
+
+// ---------- Plaid (demo link + optional real Link token) ----------
+const PLAID_KEY = 'easypay_linked_bank';
+
+function getLinkedBank() {
+  try { return JSON.parse(localStorage.getItem(PLAID_KEY) || 'null'); } catch { return null; }
+}
+function setLinkedBank(info) {
+  if (info) localStorage.setItem(PLAID_KEY, JSON.stringify(info));
+  else localStorage.removeItem(PLAID_KEY);
+  renderPlaidCard();
+}
+
+function renderPlaidCard() {
+  const info = getLinkedBank();
+  const status = $('plaidStatus');
+  const badge = $('plaidBadge');
+  const linked = $('plaidLinkedInfo');
+  const linkBtn = $('plaidLinkBtn');
+  const unlinkBtn = $('plaidUnlinkBtn');
+  if (!status) return;
+  if (info) {
+    status.textContent = 'Your external bank is connected for transfers.';
+    if (badge) { badge.textContent = 'Linked'; badge.classList.add('linked'); }
+    if (linked) linked.classList.remove('hidden');
+    if ($('plaidBankName')) $('plaidBankName').textContent = info.name || 'Linked bank';
+    if ($('plaidBankMeta')) $('plaidBankMeta').textContent =
+      (info.subtype || 'Checking') + ' · •••• ' + (info.mask || '0000');
+    if (linkBtn) linkBtn.classList.add('hidden');
+    if (unlinkBtn) unlinkBtn.classList.remove('hidden');
+  } else {
+    status.textContent = 'No bank linked yet. Connect securely with Plaid.';
+    if (badge) { badge.textContent = 'Not linked'; badge.classList.remove('linked'); }
+    if (linked) linked.classList.add('hidden');
+    if (linkBtn) linkBtn.classList.remove('hidden');
+    if (unlinkBtn) unlinkBtn.classList.add('hidden');
+  }
+}
+
+async function linkBankWithPlaid() {
+  // Try backend link-token (real Plaid) — fall back to demo link
+  try {
+    const data = await api('/api/plaid/link-token', { method: 'POST', body: '{}' });
+    if (data.link_token && window.Plaid) {
+      const handler = window.Plaid.create({
+        token: data.link_token,
+        onSuccess: async (public_token, metadata) => {
+          try {
+            await api('/api/plaid/exchange', {
+              method: 'POST',
+              body: JSON.stringify({ public_token, metadata })
+            });
+          } catch (_) { /* demo may not persist server-side */ }
+          const acct = (metadata && metadata.accounts && metadata.accounts[0]) || {};
+          setLinkedBank({
+            name: (metadata && metadata.institution && metadata.institution.name) || 'Linked bank',
+            mask: acct.mask || '0000',
+            subtype: acct.subtype || 'checking',
+            linkedAt: new Date().toISOString()
+          });
+          showToast('Bank linked with Plaid');
+        },
+        onExit: () => {}
+      });
+      handler.open();
+      return;
+    }
+  } catch (_) {
+    // no real Plaid keys — demo flow
+  }
+  // Demo simulation
+  setLinkedBank({
+    name: 'Chase',
+    mask: String(Math.floor(1000 + Math.random() * 9000)),
+    subtype: 'checking',
+    linkedAt: new Date().toISOString(),
+    demo: true
+  });
+  showToast('Bank linked (demo Plaid flow)');
+}
+
+function unlinkBank() {
+  setLinkedBank(null);
+  showToast('Bank unlinked');
+}
+
 // ---------- Auth ----------
+function continueFromConsent() {
+  const terms = $('consentTerms');
+  const marketing = $('consentMarketing');
+  const err = $('consentError');
+  if (!terms || !terms.checked || !marketing || !marketing.checked) {
+    if (err) {
+      err.textContent = 'Please check both boxes to continue.';
+      err.classList.remove('hidden');
+    } else {
+      showToast('Please check both boxes to continue.');
+    }
+    return;
+  }
+  if (err) err.classList.add('hidden');
+  showPage('signup');
+}
+
+function isAtLeast16(dobStr) {
+  if (!dobStr) return false;
+  const dob = new Date(dobStr + 'T00:00:00');
+  const now = new Date();
+  let age = now.getFullYear() - dob.getFullYear();
+  const m = now.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < dob.getDate())) age--;
+  return age >= 16;
+}
+
 async function handleSignup(e) {
   e.preventDefault();
   const name = $('su-name').value.trim();
+  const address = $('su-address') ? $('su-address').value.trim() : '';
+  const dob = $('su-dob') ? $('su-dob').value : '';
+  const idNumber = $('su-id') ? $('su-id').value.trim() : '';
+  const username = $('su-username') ? $('su-username').value.trim() : '';
   const email = $('su-email').value.trim();
   const password = $('su-password').value;
   const confirm = $('su-confirm').value;
@@ -121,11 +239,25 @@ async function handleSignup(e) {
     err.classList.remove('hidden');
     return;
   }
+  if (dob && !isAtLeast16(dob)) {
+    err.textContent = 'You must be at least 16 years old to use Easy Pay.';
+    err.classList.remove('hidden');
+    return;
+  }
 
   try {
     const data = await api('/api/auth/signup', {
       method: 'POST',
-      body: JSON.stringify({ name, email, password })
+      body: JSON.stringify({
+        name,
+        email,
+        password,
+        address,
+        dateOfBirth: dob,
+        idNumber,
+        username,
+        marketingOptIn: !!( $('consentMarketing') && $('consentMarketing').checked )
+      })
     });
     setToken(data.token);
     currentUser = data.user;
@@ -304,6 +436,12 @@ async function handleTransfer(e) {
   e.preventDefault();
   const err = $('transferError');
   err.classList.add('hidden');
+
+  if (!getLinkedBank()) {
+    err.textContent = 'Link a bank account with Plaid before transferring.';
+    err.classList.remove('hidden');
+    return;
+  }
 
   const body = {
     direction: $('tf-direction').value,
