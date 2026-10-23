@@ -217,6 +217,30 @@
         <button class="btn btn-outline btn-sm logout-btn" onclick="logout()">Log Out</button>
       </aside>
 
+      <!-- Mobile bottom navigation -->
+      <nav class="bottom-nav" id="bottomNav" aria-label="Dashboard navigation">
+        <button type="button" class="bnav-item active" data-panel="overview" onclick="showPanel('overview')">
+          <span class="bnav-icon">⌂</span>
+          <span>Overview</span>
+        </button>
+        <button type="button" class="bnav-item" data-panel="send" onclick="showPanel('send')">
+          <span class="bnav-icon">↑</span>
+          <span>Send</span>
+        </button>
+        <button type="button" class="bnav-item" data-panel="receive" onclick="showPanel('receive')">
+          <span class="bnav-icon">↓</span>
+          <span>Receive</span>
+        </button>
+        <button type="button" class="bnav-item" data-panel="transfer" onclick="showPanel('transfer')">
+          <span class="bnav-icon">⇄</span>
+          <span>Transfer</span>
+        </button>
+        <button type="button" class="bnav-item" data-panel="history" onclick="showPanel('history')">
+          <span class="bnav-icon">📋</span>
+          <span>History</span>
+        </button>
+      </nav>
+
       <main class="dash-main">
         <!-- Overview -->
         <div id="panel-overview" class="panel active">
