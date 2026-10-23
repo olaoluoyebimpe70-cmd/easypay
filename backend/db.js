@@ -33,8 +33,18 @@ async function init() {
       password_hash TEXT NOT NULL,
       balance DOUBLE PRECISION NOT NULL DEFAULT 0,
       account_last4 TEXT NOT NULL,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      username TEXT,
+      address TEXT,
+      date_of_birth TEXT,
+      id_number TEXT,
+      marketing_opt_in BOOLEAN DEFAULT FALSE
     );
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS username TEXT;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS address TEXT;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS date_of_birth TEXT;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS id_number TEXT;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS marketing_opt_in BOOLEAN DEFAULT FALSE;
   `);
   await pgPool.query(`
     CREATE TABLE IF NOT EXISTS transactions (
@@ -84,7 +94,12 @@ function mapUser(row) {
     passwordHash: row.password_hash,
     balance: Number(row.balance),
     accountLast4: row.account_last4,
-    createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at
+    createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at,
+    username: row.username || null,
+    address: row.address || null,
+    dateOfBirth: row.date_of_birth || null,
+    idNumber: row.id_number || null,
+    marketingOptIn: !!row.marketing_opt_in
   };
 }
 
@@ -133,9 +148,12 @@ async function getUserById(id) {
 async function createUser(user) {
   if (usePostgres) {
     await pgPool.query(
-      `INSERT INTO users (id, name, email, password_hash, balance, account_last4, created_at)
-       VALUES ($1,$2,$3,$4,$5,$6,$7)`,
-      [user.id, user.name, user.email.toLowerCase(), user.passwordHash, user.balance, user.accountLast4, user.createdAt]
+      `INSERT INTO users (id, name, email, password_hash, balance, account_last4, created_at, username, address, date_of_birth, id_number, marketing_opt_in)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+      [
+        user.id, user.name, user.email.toLowerCase(), user.passwordHash, user.balance, user.accountLast4, user.createdAt,
+        user.username || null, user.address || null, user.dateOfBirth || null, user.idNumber || null, !!user.marketingOptIn
+      ]
     );
     return user;
   }
