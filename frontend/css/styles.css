@@ -618,21 +618,77 @@ a:hover { text-decoration: underline; }
   .hero-cta { justify-content: center; }
   .hero-stats { justify-content: center; }
   .phone-mock { order: -1; }
-  .dashboard { grid-template-columns: 1fr; }
+  .dashboard {
+    grid-template-columns: 1fr;
+    min-height: calc(100vh - 64px);
+    padding-bottom: 72px; /* space for bottom nav */
+  }
   .sidebar {
     border-right: none;
     border-bottom: 1px solid var(--gray-200);
-    padding: 1rem;
+    padding: 0.85rem 1rem 0.5rem;
+    position: relative;
   }
+  .sidebar-user {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0.5rem;
+  }
+  /* Hide old top nav links on tablet/mobile — use bottom bar instead */
   .sidebar-nav {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: .35rem;
+    display: none;
   }
-  .side-link { padding: .5rem .75rem; font-size: .85rem; }
   .logout-btn { display: none; }
   .quick-actions { grid-template-columns: repeat(2, 1fr); }
+  .dash-main {
+    padding: 1.25rem 1rem 1.5rem;
+  }
+
+  /* Fixed bottom navigation bar */
+  .bottom-nav {
+    display: flex !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 150;
+    background: #fff;
+    border-top: 1px solid var(--gray-200);
+    box-shadow: 0 -4px 20px rgba(0,0,0,.06);
+    padding: 0.35rem 0.25rem calc(0.35rem + env(safe-area-inset-bottom, 0px));
+    justify-content: space-around;
+    align-items: stretch;
+  }
+  .bottom-nav .bnav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15rem;
+    padding: 0.4rem 0.2rem;
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: var(--gray-600);
+    cursor: pointer;
+    border-radius: 10px;
+    min-width: 0;
+  }
+  .bottom-nav .bnav-item .bnav-icon {
+    font-size: 1.2rem;
+    line-height: 1;
+  }
+  .bottom-nav .bnav-item.active {
+    color: var(--primary);
+    background: var(--primary-light);
+  }
 }
+
+/* Hide bottom nav on desktop */
+.bottom-nav { display: none; }
 
 @media (max-width: 600px) {
   .nav-links { display: none; }
@@ -652,4 +708,5 @@ a:hover { text-decoration: underline; }
   .form-row { grid-template-columns: 1fr; }
   .hero { padding-top: 2rem; }
   .balance-amount { font-size: 1.85rem; }
+  .bottom-nav .bnav-item { font-size: 0.65rem; }
 }
