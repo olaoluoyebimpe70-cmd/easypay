@@ -21,12 +21,12 @@
         <a href="#" onclick="showPage('home')" class="nav-link">Home</a>
         <a href="#" onclick="showPage('features')" class="nav-link">Features</a>
         <a href="#" onclick="showPage('signin')" class="nav-link nav-auth" id="navSignIn">Sign In</a>
-        <a href="#" onclick="showPage('signup')" class="btn btn-primary btn-sm nav-auth" id="navSignUp">Get Started</a>
+        <a href="#" onclick="showPage('onboarding')" class="btn btn-primary btn-sm nav-auth" id="navSignUp">Get Started</a>
         <a href="#" onclick="logout()" class="nav-link nav-auth hidden" id="navLogout">Log Out</a>
       </div>
       <div class="nav-actions" id="navActions">
         <a href="#" onclick="showPage('signin'); return false;" class="nav-link" id="navSignInMobile">Sign In</a>
-        <a href="#" onclick="showPage('signup'); return false;" class="btn btn-primary btn-sm" id="navSignUpMobile">Get Started</a>
+        <a href="#" onclick="showPage('onboarding'); return false;" class="btn btn-primary btn-sm" id="navSignUpMobile">Get Started</a>
         <a href="#" onclick="logout(); return false;" class="btn btn-outline btn-sm hidden" id="navLogoutMobile">Log Out</a>
       </div>
       <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">
@@ -42,7 +42,7 @@
         <h1>Banking that moves at the speed of life</h1>
         <p class="hero-sub">Easy Pay brings fast, secure ACH transfers to everyday banking. Send, receive, and transfer money with confidence — all in one simple dashboard.</p>
         <div class="hero-cta">
-          <button class="btn btn-primary btn-lg" onclick="showPage('signup')">Open Free Account</button>
+          <button class="btn btn-primary btn-lg" onclick="showPage('onboarding')">Open Free Account</button>
           <button class="btn btn-outline btn-lg" onclick="showPage('signin')">Sign In</button>
           <button class="btn btn-outline btn-lg" onclick="showPage('features')">See How It Works</button>
         </div>
@@ -107,7 +107,7 @@
       <div class="cta-box">
         <h2>Ready to simplify your banking?</h2>
         <p>Join thousands of Americans who trust Easy Pay for fast ACH transfers.</p>
-        <button class="btn btn-primary btn-lg" onclick="showPage('signup')">Create Your Account</button>
+        <button class="btn btn-primary btn-lg" onclick="showPage('onboarding')">Create Your Account</button>
       </div>
     </section>
   </section>
@@ -144,20 +144,174 @@
         </ol>
       </div>
 
-      <button class="btn btn-primary" onclick="showPage('signup')">Get Started Free</button>
+      <button class="btn btn-primary" onclick="showPage('onboarding')">Get Started Free</button>
+    </div>
+  </section>
+
+  <!-- ========== ONBOARDING: Before we get started ========== -->
+  <section id="page-onboarding" class="page">
+    <div class="onboard-wrap">
+      <div class="onboard-top">
+        <button type="button" class="onboard-back" onclick="showPage('home')" aria-label="Back">←</button>
+        <a href="#" class="onboard-help" onclick="showPage('features'); return false;">Help</a>
+      </div>
+      <h1 class="onboard-title">Before we get started</h1>
+      <p class="onboard-lead">A few things to keep in mind</p>
+      <ul class="onboard-list">
+        <li class="onboard-item">
+          <span class="onboard-icon" aria-hidden="true">👤</span>
+          <div>
+            <strong>Are you 16 and above?</strong>
+            <p>You need to be at least 16 years old to use Easy Pay.</p>
+          </div>
+        </li>
+        <li class="onboard-item">
+          <span class="onboard-icon" aria-hidden="true">🪪</span>
+          <div>
+            <strong>Have your ID ready</strong>
+            <p>Driver’s license or state ID number. You can enter it during signup.</p>
+          </div>
+        </li>
+        <li class="onboard-item">
+          <span class="onboard-icon" aria-hidden="true">📷</span>
+          <div>
+            <strong>Get ready to take a selfie</strong>
+            <p>Are you in a well-lit place? (Demo may skip camera for now.)</p>
+          </div>
+        </li>
+      </ul>
+      <p class="onboard-legal">Easy Pay is a demo banking product. Real deposits require a licensed bank partner. Not FDIC insured in this demo.</p>
+      <button type="button" class="btn btn-primary btn-block onboard-cta" onclick="showPage('consent')">Get Started</button>
+    </div>
+  </section>
+
+  <!-- ========== CONSENT ========== -->
+  <section id="page-consent" class="page">
+    <div class="onboard-wrap">
+      <div class="onboard-top">
+        <button type="button" class="onboard-back" onclick="showPage('onboarding')" aria-label="Back">←</button>
+        <a href="#" class="onboard-help" onclick="showPage('features'); return false;">Help</a>
+      </div>
+      <h1 class="onboard-title">First things first, we need consent</h1>
+      <div class="consent-list">
+        <label class="consent-row">
+          <input type="checkbox" id="consentTerms" />
+          <span>I agree to the <a href="#" onclick="showPage('terms'); return false;">Terms and Conditions</a> and have read the <a href="#" onclick="showPage('privacy'); return false;">Privacy Policy</a>.</span>
+        </label>
+        <label class="consent-row">
+          <input type="checkbox" id="consentMarketing" />
+          <span>I agree to receive updates about offers, events and promotions from Easy Pay.</span>
+        </label>
+      </div>
+      <p class="form-error hidden" id="consentError">Please check both boxes to continue.</p>
+      <button type="button" class="btn btn-primary btn-block onboard-cta" onclick="continueFromConsent()">Continue</button>
+    </div>
+  </section>
+
+  <!-- ========== TERMS AND CONDITIONS ========== -->
+  <section id="page-terms" class="page">
+    <div class="legal-wrap">
+      <div class="onboard-top">
+        <button type="button" class="onboard-back" onclick="history.back(); showPage('consent')" aria-label="Back">←</button>
+      </div>
+      <h1>Terms and Conditions</h1>
+      <p class="legal-updated">Last updated: October 23, 2026</p>
+      <div class="legal-body">
+        <p>Welcome to Easy Pay. These Terms and Conditions (“Terms”) govern your access to and use of the Easy Pay website and demo application (the “Service”). By creating an account or using the Service, you agree to these Terms.</p>
+
+        <h2>1. About Easy Pay</h2>
+        <p>Easy Pay is a <strong>demonstration / educational banking interface</strong>. It is not a chartered bank and does not hold customer deposits under an FDIC-insured program unless and until a licensed bank partner is integrated and disclosed. Simulated balances and ACH flows are for product testing only and do not represent real money movement.</p>
+
+        <h2>2. Eligibility</h2>
+        <p>You must be at least <strong>16 years of age</strong> to use Easy Pay. By registering, you represent that you meet this requirement and that the information you provide is accurate.</p>
+
+        <h2>3. Account registration</h2>
+        <p>You agree to provide truthful information, including your full name, home address, date of birth, username, and a secure password. You are responsible for keeping your login credentials confidential and for all activity under your account.</p>
+
+        <h2>4. Identity information</h2>
+        <p>We may ask for a driver’s license or state ID number and related details to support identity verification (KYC) when required by a banking partner or applicable law. Providing false identification information is prohibited.</p>
+
+        <h2>5. Acceptable use</h2>
+        <p>You agree not to use the Service for fraud, money laundering, illegal activity, harassment, or to attempt to disrupt or reverse-engineer the Service. We may suspend or terminate accounts that violate these Terms.</p>
+
+        <h2>6. Simulated transfers</h2>
+        <p>Send, receive, and transfer features in demo mode update internal balances only. They do not originate real ACH entries on the Federal Reserve or NACHA networks unless a production partner integration is active and clearly disclosed in the product.</p>
+
+        <h2>7. No financial advice</h2>
+        <p>Nothing on Easy Pay is investment, tax, or legal advice. You should consult qualified professionals for decisions about real banking and money movement.</p>
+
+        <h2>8. Privacy</h2>
+        <p>How we collect and use information is described in our <a href="#" onclick="showPage('privacy'); return false;">Privacy Policy</a>.</p>
+
+        <h2>9. Disclaimers</h2>
+        <p>THE SERVICE IS PROVIDED “AS IS” WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED. TO THE MAXIMUM EXTENT PERMITTED BY LAW, EASY PAY DISCLAIMS LIABILITY FOR LOST DATA, LOST PROFITS, OR DAMAGES ARISING FROM USE OF THE DEMO SERVICE.</p>
+
+        <h2>10. Changes</h2>
+        <p>We may update these Terms from time to time. Continued use after changes constitutes acceptance of the revised Terms.</p>
+
+        <h2>11. Contact</h2>
+        <p>Questions about these Terms may be sent through the support channels listed on the Easy Pay website.</p>
+      </div>
+      <button type="button" class="btn btn-primary btn-block" onclick="showPage('consent')">Back to consent</button>
+    </div>
+  </section>
+
+  <!-- ========== PRIVACY POLICY ========== -->
+  <section id="page-privacy" class="page">
+    <div class="legal-wrap">
+      <div class="onboard-top">
+        <button type="button" class="onboard-back" onclick="showPage('consent')" aria-label="Back">←</button>
+      </div>
+      <h1>Privacy Policy</h1>
+      <p class="legal-updated">Last updated: October 23, 2026</p>
+      <div class="legal-body">
+        <p>This Privacy Policy explains how Easy Pay collects and uses information in connection with the demo Service.</p>
+        <h2>Information we collect</h2>
+        <p>Account details you provide (name, email or username, home address, date of birth, password hash, optional ID number), device/browser data, and activity within the app (e.g. simulated transfers).</p>
+        <h2>How we use information</h2>
+        <p>To operate the demo, secure accounts, improve the product, and—if you opt in—send product updates. We do not sell your personal information.</p>
+        <h2>Storage</h2>
+        <p>Data may be stored on hosting providers (e.g. Render) and, if configured, a database such as Postgres. Free hosting environments may not guarantee long-term retention unless a persistent database is connected.</p>
+        <h2>Sharing</h2>
+        <p>We may share information with service providers who host the app, or with a future licensed bank/ACH partner as required to provide real payment services, and when required by law.</p>
+        <h2>Your choices</h2>
+        <p>You may request account deletion by contacting support. Marketing emails can be declined via the consent checkbox or later opt-out.</p>
+        <h2>Contact</h2>
+        <p>Privacy questions can be sent through the Easy Pay support channels on the website.</p>
+      </div>
+      <button type="button" class="btn btn-primary btn-block" onclick="showPage('consent')">Back to consent</button>
     </div>
   </section>
 
   <!-- ========== SIGN UP ========== -->
   <section id="page-signup" class="page">
     <div class="auth-container">
-      <div class="auth-card">
+      <div class="auth-card auth-card-wide">
+        <div class="onboard-top auth-card-top">
+          <button type="button" class="onboard-back" onclick="showPage('consent')" aria-label="Back">←</button>
+        </div>
         <h1>Create your Easy Pay account</h1>
-        <p class="auth-sub">Free to open. No monthly fees.</p>
+        <p class="auth-sub">Tell us a bit about yourself</p>
         <form id="signupForm" onsubmit="handleSignup(event)">
           <div class="form-group">
             <label for="su-name">Full Name</label>
             <input type="text" id="su-name" required placeholder="Jane Doe" autocomplete="name" />
+          </div>
+          <div class="form-group">
+            <label for="su-address">Home Address</label>
+            <input type="text" id="su-address" required placeholder="Street, City, State, ZIP" autocomplete="street-address" />
+          </div>
+          <div class="form-group">
+            <label for="su-dob">Date of Birth</label>
+            <input type="date" id="su-dob" required />
+          </div>
+          <div class="form-group">
+            <label for="su-id">Driver’s License or State ID Number</label>
+            <input type="text" id="su-id" required placeholder="ID number" autocomplete="off" />
+          </div>
+          <div class="form-group">
+            <label for="su-username">Username</label>
+            <input type="text" id="su-username" required minlength="3" placeholder="Choose a username" autocomplete="username" />
           </div>
           <div class="form-group">
             <label for="su-email">Email</label>
@@ -197,7 +351,7 @@
           <p class="form-error hidden" id="signinError"></p>
           <button type="submit" class="btn btn-primary btn-block">Sign In</button>
         </form>
-        <p class="auth-footer">New to Easy Pay? <a href="#" onclick="showPage('signup')">Create an account</a></p>
+        <p class="auth-footer">New to Easy Pay? <a href="#" onclick="showPage('onboarding')">Create an account</a></p>
       </div>
     </div>
   </section>
@@ -334,13 +488,40 @@
         <!-- Transfer -->
         <div id="panel-transfer" class="panel">
           <h1 class="dash-title">Transfer Money</h1>
-          <p class="panel-desc">Move funds between your Easy Pay balance and a linked external account (simulated).</p>
+          <p class="panel-desc">Link an external bank with Plaid, then move funds to or from your Easy Pay balance.</p>
+
+          <div class="plaid-card" id="plaidCard">
+            <div class="plaid-card-head">
+              <div>
+                <h3 class="plaid-title">Linked bank account</h3>
+                <p class="plaid-sub" id="plaidStatus">No bank linked yet. Connect securely with Plaid.</p>
+              </div>
+              <span class="plaid-badge" id="plaidBadge">Not linked</span>
+            </div>
+            <div class="plaid-linked hidden" id="plaidLinkedInfo">
+              <div class="plaid-bank-row">
+                <span class="plaid-bank-icon">🏦</span>
+                <div>
+                  <div class="plaid-bank-name" id="plaidBankName">—</div>
+                  <div class="plaid-bank-meta" id="plaidBankMeta">—</div>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="btn btn-primary btn-block" id="plaidLinkBtn" onclick="linkBankWithPlaid()">
+              Link bank account with Plaid
+            </button>
+            <button type="button" class="btn btn-outline btn-block hidden" id="plaidUnlinkBtn" onclick="unlinkBank()">
+              Unlink bank
+            </button>
+            <p class="plaid-note">Plaid is used to verify your external account. Demo mode simulates a successful link until you add real Plaid API keys.</p>
+          </div>
+
           <form id="transferForm" class="dash-form" onsubmit="handleTransfer(event)">
             <div class="form-group">
               <label for="tf-direction">Direction</label>
               <select id="tf-direction" required>
-                <option value="out">Easy Pay → External Account</option>
-                <option value="in">External Account → Easy Pay</option>
+                <option value="out">Easy Pay → Linked Bank</option>
+                <option value="in">Linked Bank → Easy Pay</option>
               </select>
             </div>
             <div class="form-group">
