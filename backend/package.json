@@ -1,4 +1,5 @@
-"name": "easypay-backend",
+{
+  "name": "easypay-backend",
   "version": "1.0.0",
   "description": "Easy Pay demo banking backend with ACH simulation and provider hooks",
   "main": "server.js",
