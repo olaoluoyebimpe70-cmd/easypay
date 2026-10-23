@@ -54,6 +54,9 @@ function publicUser(user) {
     id: user.id,
     name: user.name,
     email: user.email,
+    username: user.username || null,
+    address: user.address || null,
+    dateOfBirth: user.dateOfBirth || null,
     balance: user.balance,
     accountLast4: user.accountLast4,
     createdAt: user.createdAt
@@ -75,9 +78,32 @@ app.get('/api/health', async (req, res) => {
 // ---------- Auth routes ----------
 app.post('/api/auth/signup', async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, address, dateOfBirth, idNumber, username, marketingOptIn } = req.body;
     if (!name || !email || !password) {
       return res.status(400).json({ error: 'Name, email and password are required' });
+    }
+    if (!username || String(username).trim().length < 3) {
+      return res.status(400).json({ error: 'Username must be at least 3 characters' });
+    }
+    if (!address || !String(address).trim()) {
+      return res.status(400).json({ error: 'Home address is required' });
+    }
+    if (!dateOfBirth) {
+      return res.status(400).json({ error: 'Date of birth is required' });
+    }
+    // Age 16+
+    {
+      const dob = new Date(String(dateOfBirth) + 'T00:00:00');
+      const now = new Date();
+      let age = now.getFullYear() - dob.getFullYear();
+      const mm = now.getMonth() - dob.getMonth();
+      if (mm < 0 || (mm === 0 && now.getDate() < dob.getDate())) age--;
+      if (isNaN(dob.getTime()) || age < 16) {
+        return res.status(400).json({ error: 'You must be at least 16 years old to use Easy Pay' });
+      }
+    }
+    if (!idNumber || !String(idNumber).trim()) {
+      return res.status(400).json({ error: "Driver's license or state ID number is required" });
     }
     if (password.length < 6) {
       return res.status(400).json({ error: 'Password must be at least 6 characters' });
@@ -91,6 +117,11 @@ app.post('/api/auth/signup', async (req, res) => {
       id: uuidv4(),
       name: name.trim(),
       email: email.trim().toLowerCase(),
+      username: String(username).trim().toLowerCase(),
+      address: String(address).trim(),
+      dateOfBirth: String(dateOfBirth),
+      idNumber: String(idNumber).trim(),
+      marketingOptIn: !!marketingOptIn,
       passwordHash: hash,
       balance: STARTING_BALANCE,
       accountLast4: String(Math.floor(1000 + Math.random() * 9000)),
@@ -277,6 +308,48 @@ app.post('/api/admin/fail/:id', async (req, res) => {
 app.get('/api/admin/pending', async (req, res) => {
   const pending = (await db.getAllTransactions()).filter(t => t.status === 'pending' || t.status === 'submitted');
   res.json({ transactions: pending });
+});
+
+
+// ---------- Plaid (optional — needs PLAID_CLIENT_ID + PLAID_SECRET) ----------
+app.post('/api/plaid/link-token', auth, async (req, res) => {
+  const clientId = process.env.PLAID_CLIENT_ID;
+  const secret = process.env.PLAID_SECRET;
+  const env = process.env.PLAID_ENV || 'sandbox';
+  if (!clientId || !secret) {
+    return res.status(501).json({
+      error: 'Plaid not configured',
+      demo: true,
+      message: 'Set PLAID_CLIENT_ID and PLAID_SECRET for real Link. Frontend will use demo link.'
+    });
+  }
+  try {
+    const host = env === 'production' ? 'https://production.plaid.com' : 'https://sandbox.plaid.com';
+    const r = await fetch(host + '/link/token/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        client_id: clientId,
+        secret,
+        user: { client_user_id: String(req.user.id) },
+        client_name: 'Easy Pay',
+        products: ['auth', 'transfer'],
+        country_codes: ['US'],
+        language: 'en'
+      })
+    });
+    const data = await r.json();
+    if (!r.ok) return res.status(502).json({ error: data.error_message || 'Plaid error', details: data });
+    res.json({ link_token: data.link_token });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Failed to create Plaid link token' });
+  }
+});
+
+app.post('/api/plaid/exchange', auth, async (req, res) => {
+  // Scaffold: exchange public_token for access_token when Plaid is configured
+  res.json({ ok: true, demo: !(process.env.PLAID_CLIENT_ID && process.env.PLAID_SECRET) });
 });
 
 // ---------- Webhook endpoint (for automatic providers) ----------
