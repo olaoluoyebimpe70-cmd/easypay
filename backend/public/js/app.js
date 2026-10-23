@@ -67,6 +67,12 @@ function showPage(pageId) {
   $('navSignIn').classList.toggle('hidden', loggedIn);
   $('navSignUp').classList.toggle('hidden', loggedIn);
   $('navLogout').classList.toggle('hidden', !loggedIn);
+  const siM = $('navSignInMobile');
+  const suM = $('navSignUpMobile');
+  const loM = $('navLogoutMobile');
+  if (siM) siM.classList.toggle('hidden', loggedIn);
+  if (suM) suM.classList.toggle('hidden', loggedIn);
+  if (loM) loM.classList.toggle('hidden', !loggedIn);
   $('mainFooter').classList.toggle('hidden', pageId === 'dashboard');
   $('navLinks').classList.remove('open');
   window.scrollTo(0, 0);
