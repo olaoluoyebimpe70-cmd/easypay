@@ -744,3 +744,208 @@ a:hover { text-decoration: underline; }
   .nav-actions { display: none !important; }
   .dash-topbar { display: none !important; }
 }
+
+/* ========== Onboarding / Consent / Legal ========== */
+.onboard-wrap, .legal-wrap {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 2.5rem;
+  min-height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: column;
+}
+.onboard-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  min-height: 40px;
+}
+.onboard-back {
+  border: none;
+  background: none;
+  font-size: 1.35rem;
+  color: var(--primary);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  line-height: 1;
+}
+.onboard-help {
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+.onboard-title {
+  font-size: 1.65rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+  color: var(--gray-900);
+}
+.onboard-lead {
+  color: var(--gray-600);
+  margin-bottom: 1.75rem;
+  font-size: 1rem;
+}
+.onboard-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+.onboard-item {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+}
+.onboard-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary-light, #e8f0fe);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.1rem;
+}
+.onboard-item strong {
+  display: block;
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+  color: var(--gray-900);
+}
+.onboard-item p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--gray-600);
+  line-height: 1.4;
+}
+.onboard-legal {
+  margin-top: auto;
+  font-size: 0.8rem;
+  color: var(--gray-500);
+  line-height: 1.45;
+  margin-bottom: 1rem;
+}
+.onboard-cta {
+  margin-top: 0.5rem;
+  border-radius: 12px;
+  padding: 0.95rem 1rem;
+  font-size: 1rem;
+}
+
+.consent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin: 1.5rem 0 2rem;
+}
+.consent-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  cursor: pointer;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--gray-800);
+}
+.consent-row input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  accent-color: var(--primary);
+}
+.consent-row a {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+.consent-row a:hover { text-decoration: underline; }
+
+.legal-wrap h1 {
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+.legal-updated {
+  font-size: 0.85rem;
+  color: var(--gray-500);
+  margin-bottom: 1.25rem;
+}
+.legal-body {
+  font-size: 0.92rem;
+  color: var(--gray-700);
+  line-height: 1.55;
+  margin-bottom: 1.5rem;
+}
+.legal-body h2 {
+  font-size: 1.05rem;
+  margin: 1.25rem 0 0.4rem;
+  color: var(--gray-900);
+}
+.legal-body p { margin-bottom: 0.65rem; }
+.legal-body a { color: var(--primary); font-weight: 600; }
+
+.auth-card-wide { max-width: 440px; }
+.auth-card-top { margin: -0.25rem 0 0.75rem; }
+
+@media (max-width: 600px) {
+  .onboard-wrap, .legal-wrap {
+    padding-bottom: 2rem;
+  }
+  .onboard-title { font-size: 1.45rem; }
+}
+
+/* Plaid link card */
+.plaid-card {
+  background: var(--gray-50, #f8fafc);
+  border: 1px solid var(--gray-200);
+  border-radius: 14px;
+  padding: 1.15rem 1.2rem;
+  margin-bottom: 1.5rem;
+}
+.plaid-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.9rem;
+}
+.plaid-title { font-size: 1rem; margin: 0 0 0.2rem; }
+.plaid-sub { margin: 0; font-size: 0.88rem; color: var(--gray-600); }
+.plaid-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  background: var(--gray-200);
+  color: var(--gray-700);
+  white-space: nowrap;
+}
+.plaid-badge.linked {
+  background: #dcfce7;
+  color: #166534;
+}
+.plaid-linked { margin-bottom: 0.9rem; }
+.plaid-bank-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: 12px;
+  padding: 0.75rem 0.9rem;
+}
+.plaid-bank-icon { font-size: 1.4rem; }
+.plaid-bank-name { font-weight: 600; }
+.plaid-bank-meta { font-size: 0.85rem; color: var(--gray-600); }
+.plaid-note {
+  margin: 0.75rem 0 0;
+  font-size: 0.8rem;
+  color: var(--gray-500);
+  line-height: 1.4;
+}
+.plaid-card .btn { margin-top: 0.35rem; }
+.plaid-card .btn + .btn { margin-top: 0.5rem; }
