@@ -63,7 +63,7 @@ async function initiateACH(opts) {
   };
 
   // Update user balance immediately for demo UX (real systems often hold funds)
-  const user = db.getUserById(userId);
+  const user = await db.getUserById(userId);
   if (!user) throw new Error('User not found');
 
   if (direction === 'debit' && user.balance < amount) {
@@ -73,8 +73,8 @@ async function initiateACH(opts) {
   }
 
   user.balance = Math.round((user.balance + signedAmount) * 100) / 100;
-  db.updateUser(user);
-  db.addTransaction(tx);
+  await db.updateUser(user);
+  await db.addTransaction(tx);
 
   // Route by mode
   if (MODE === 'simulate') {
@@ -85,14 +85,14 @@ async function initiateACH(opts) {
   } else if (MODE === 'automatic') {
     try {
       const ref = await callRealProvider(tx, user);
-      db.updateTransaction(tx.id, { providerRef: ref, status: 'submitted' });
+      await db.updateTransaction(tx.id, { providerRef: ref, status: 'submitted' });
       tx.providerRef = ref;
       tx.status = 'submitted';
     } catch (e) {
-      db.updateTransaction(tx.id, { status: 'failed', memo: (memo || '') + ' | Provider error: ' + e.message });
+      await db.updateTransaction(tx.id, { status: 'failed', memo: (memo || '') + ' | Provider error: ' + e.message });
       // Reverse the balance change on failure
       user.balance = Math.round((user.balance - signedAmount) * 100) / 100;
-      db.updateUser(user);
+      await db.updateUser(user);
       throw e;
     }
   }
@@ -114,8 +114,8 @@ function buildTitle(type, direction, cp) {
 function scheduleSimulatedSettlement(txId) {
   // Simulate network + settlement delay (2–4 seconds)
   const delay = 2000 + Math.random() * 2000;
-  setTimeout(() => {
-    const updated = db.updateTransaction(txId, {
+  setTimeout(async () => {
+    const updated = await db.updateTransaction(txId, {
       status: 'settled',
       settledAt: new Date().toISOString()
     });
@@ -189,11 +189,11 @@ async function callColumn(tx, user) {
 /**
  * Manually settle a pending transaction (used in manual mode or admin).
  */
-function settleTransaction(txId) {
-  const tx = db.getAllTransactions().find(t => t.id === txId);
+async function settleTransaction(txId) {
+  const tx = await db.getAllTransactions().find(t => t.id === txId);
   if (!tx) return null;
   if (tx.status === 'settled') return tx;
-  return db.updateTransaction(txId, {
+  return await db.updateTransaction(txId, {
     status: 'settled',
     settledAt: new Date().toISOString()
   });
@@ -202,18 +202,18 @@ function settleTransaction(txId) {
 /**
  * Cancel / fail a pending transaction and reverse balance if needed.
  */
-function failTransaction(txId, reason = '') {
-  const tx = db.getAllTransactions().find(t => t.id === txId);
+async function failTransaction(txId, reason = '') {
+  const tx = await db.getAllTransactions().find(t => t.id === txId);
   if (!tx || tx.status === 'settled') return null;
 
   // Reverse balance
-  const user = db.getUserById(tx.userId);
+  const user = await db.getUserById(tx.userId);
   if (user) {
     user.balance = Math.round((user.balance - tx.amount) * 100) / 100;
-    db.updateUser(user);
+    await db.updateUser(user);
   }
 
-  return db.updateTransaction(txId, {
+  return await db.updateTransaction(txId, {
     status: 'failed',
     memo: (tx.memo || '') + (reason ? ` | ${reason}` : ''),
     settledAt: null
