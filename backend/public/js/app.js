@@ -76,6 +76,7 @@ function showPage(pageId) {
   $('mainFooter').classList.toggle('hidden', ['dashboard','onboarding','consent','terms','privacy','signup','signin'].includes(pageId));
   $('navLinks').classList.remove('open');
   window.scrollTo(0, 0);
+  if (pageId === 'signup') initDobDropdowns();
 
   if (pageId === 'dashboard') {
     if (!getToken()) {
@@ -209,6 +210,66 @@ function continueFromConsent() {
   }
   if (err) err.classList.add('hidden');
   showPage('signup');
+}
+
+
+// ---------- DOB dropdowns (month / day / year) ----------
+function daysInMonth(year, month) {
+  if (!year || !month) return 31;
+  return new Date(Number(year), Number(month), 0).getDate();
+}
+
+function fillDobDays() {
+  const month = $('su-dob-month') && $('su-dob-month').value;
+  const year = $('su-dob-year') && $('su-dob-year').value;
+  const daySel = $('su-dob-day');
+  if (!daySel) return;
+  const prev = daySel.value;
+  const max = daysInMonth(year, month);
+  daySel.innerHTML = '<option value="">Day</option>';
+  for (let d = 1; d <= max; d++) {
+    const v = String(d).padStart(2, '0');
+    daySel.innerHTML += '<option value="' + v + '">' + d + '</option>';
+  }
+  if (prev && Number(prev) <= max) daySel.value = prev;
+  syncDobHidden();
+}
+
+function fillDobYears() {
+  const yearSel = $('su-dob-year');
+  if (!yearSel || yearSel.options.length > 1) return;
+  const now = new Date().getFullYear();
+  // Must be 16+: max year = now - 16; min year = 1920
+  const maxYear = now - 16;
+  const minYear = 1920;
+  yearSel.innerHTML = '<option value="">Year</option>';
+  for (let y = maxYear; y >= minYear; y--) {
+    yearSel.innerHTML += '<option value="' + y + '">' + y + '</option>';
+  }
+}
+
+function syncDobHidden() {
+  const m = $('su-dob-month') && $('su-dob-month').value;
+  const d = $('su-dob-day') && $('su-dob-day').value;
+  const y = $('su-dob-year') && $('su-dob-year').value;
+  const hidden = $('su-dob');
+  if (!hidden) return;
+  if (m && d && y) hidden.value = y + '-' + m + '-' + d;
+  else hidden.value = '';
+}
+
+function initDobDropdowns() {
+  fillDobYears();
+  fillDobDays();
+  ['su-dob-month', 'su-dob-day', 'su-dob-year'].forEach(id => {
+    const el = $(id);
+    if (!el || el._dobBound) return;
+    el._dobBound = true;
+    el.addEventListener('change', () => {
+      if (id !== 'su-dob-day') fillDobDays();
+      else syncDobHidden();
+    });
+  });
 }
 
 function isAtLeast16(dobStr) {
@@ -470,6 +531,7 @@ $('mobileToggle').addEventListener('click', () => {
 
 // ---------- Init ----------
 (async function init() {
+  initDobDropdowns();
   if (getToken()) {
     try {
       const data = await api('/api/auth/me');
