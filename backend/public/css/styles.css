@@ -949,3 +949,28 @@ a:hover { text-decoration: underline; }
 }
 .plaid-card .btn { margin-top: 0.35rem; }
 .plaid-card .btn + .btn { margin-top: 0.5rem; }
+
+/* DOB dropdown row */
+.dob-row {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr 1fr;
+  gap: 0.5rem;
+}
+.dob-row select {
+  width: 100%;
+  padding: 0.7rem 0.55rem;
+  border: 1px solid var(--gray-300, #d1d5db);
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: #fff;
+  color: var(--gray-900, #111);
+}
+.field-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  color: var(--gray-500, #6b7280);
+}
+@media (max-width: 400px) {
+  .dob-row { grid-template-columns: 1fr; }
+}
