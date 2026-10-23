@@ -22,7 +22,16 @@ app.use(cors());
 app.use(express.json());
 
 // Serve the frontend static files
-app.use(express.static(path.join(__dirname, '../frontend')));
+// Prefer backend/public (works when Render Root Directory = backend)
+// Fallback to ../frontend for local monorepo development
+const fs = require('fs');
+const publicDir = path.join(__dirname, 'public');
+const frontendDir = path.join(__dirname, '../frontend');
+const staticDir = fs.existsSync(path.join(publicDir, 'index.html'))
+  ? publicDir
+  : frontendDir;
+app.use(express.static(staticDir));
+console.log('Serving static files from:', staticDir);
 
 // ---------- Auth middleware ----------
 function auth(req, res, next) {
@@ -277,13 +286,14 @@ app.post('/api/webhooks/ach', express.raw({ type: 'application/json' }), (req, r
   res.json({ received: true });
 });
 
-// SPA fallback
+// SPA fallback (only for non-API routes that are not real files)
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/index.html'));
+  const indexPath = path.join(staticDir, 'index.html');
+  res.sendFile(indexPath);
 });
 
 app.listen(PORT, () => {
   console.log(`\n  Easy Pay API running on http://localhost:${PORT}`);
   console.log(`  ACH mode: ${ach.MODE}${ach.MODE === 'automatic' ? ' (' + ach.PROVIDER + ')' : ''}`);
-  console.log(`  Frontend served from /frontend\n`);
+  console.log(`  Frontend static dir resolved at startup\n`);
 });
