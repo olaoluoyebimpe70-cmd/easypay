@@ -34,13 +34,13 @@ app.use(express.static(staticDir));
 console.log('Serving static files from:', staticDir);
 
 // ---------- Auth middleware ----------
-function auth(req, res, next) {
+async function auth(req, res, next) {
   const header = req.headers.authorization || '';
   const token = header.startsWith('Bearer ') ? header.slice(7) : null;
   if (!token) return res.status(401).json({ error: 'Unauthorized' });
   try {
     const payload = jwt.verify(token, JWT_SECRET);
-    const user = db.getUserById(payload.userId);
+    const user = await db.getUserById(payload.userId);
     if (!user) return res.status(401).json({ error: 'User not found' });
     req.user = user;
     next();
@@ -61,12 +61,13 @@ function publicUser(user) {
 }
 
 // ---------- Health ----------
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (req, res) => {
   res.json({
     status: 'ok',
     service: 'Easy Pay API',
     achMode: ach.MODE,
     provider: ach.MODE === 'automatic' ? ach.PROVIDER : null,
+    db: db.isPostgres() ? 'postgres' : 'json-ephemeral',
     time: new Date().toISOString()
   });
 });
@@ -81,7 +82,7 @@ app.post('/api/auth/signup', async (req, res) => {
     if (password.length < 6) {
       return res.status(400).json({ error: 'Password must be at least 6 characters' });
     }
-    if (db.getUserByEmail(email)) {
+    if (await db.getUserByEmail(email)) {
       return res.status(409).json({ error: 'An account with this email already exists' });
     }
 
@@ -95,7 +96,7 @@ app.post('/api/auth/signup', async (req, res) => {
       accountLast4: String(Math.floor(1000 + Math.random() * 9000)),
       createdAt: new Date().toISOString()
     };
-    db.createUser(user);
+    await db.createUser(user);
 
     // Welcome transaction
     await ach.initiateACH({
@@ -108,7 +109,7 @@ app.post('/api/auth/signup', async (req, res) => {
     });
 
     // Re-fetch because balance was already set
-    const fresh = db.getUserById(user.id);
+    const fresh = await db.getUserById(user.id);
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
 
     res.status(201).json({
@@ -127,7 +128,7 @@ app.post('/api/auth/login', async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
     }
-    const user = db.getUserByEmail(email);
+    const user = await db.getUserByEmail(email);
     if (!user) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
@@ -143,12 +144,12 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-app.get('/api/auth/me', auth, (req, res) => {
+app.get('/api/auth/me', auth, async (req, res) => {
   res.json({ user: publicUser(req.user) });
 });
 
 // ---------- Account ----------
-app.get('/api/account', auth, (req, res) => {
+app.get('/api/account', auth, async (req, res) => {
   res.json({
     user: publicUser(req.user),
     routingNumber: '021000021', // demo routing
@@ -157,9 +158,9 @@ app.get('/api/account', auth, (req, res) => {
 });
 
 // ---------- Transactions ----------
-app.get('/api/transactions', auth, (req, res) => {
+app.get('/api/transactions', auth, async (req, res) => {
   const filter = req.query.type; // send | receive | transfer | all
-  let txs = db.getTransactionsForUser(req.user.id);
+  let txs = await db.getTransactionsForUser(req.user.id);
   if (filter && filter !== 'all') {
     txs = txs.filter(t => t.type === filter);
   }
@@ -193,7 +194,7 @@ app.post('/api/send', auth, async (req, res) => {
       memo: memo || ''
     });
 
-    const user = db.getUserById(req.user.id);
+    const user = await db.getUserById(req.user.id);
     res.status(201).json({ transaction: tx, balance: user.balance });
   } catch (e) {
     if (e.code === 'INSUFFICIENT_FUNDS') {
@@ -222,7 +223,7 @@ app.post('/api/receive', auth, async (req, res) => {
       memo: memo || 'Incoming ACH credit'
     });
 
-    const user = db.getUserById(req.user.id);
+    const user = await db.getUserById(req.user.id);
     res.status(201).json({ transaction: tx, balance: user.balance });
   } catch (e) {
     console.error(e);
@@ -248,7 +249,7 @@ app.post('/api/transfer', auth, async (req, res) => {
       memo: memo || (direction === 'out' ? 'ACH outbound transfer' : 'ACH inbound transfer')
     });
 
-    const user = db.getUserById(req.user.id);
+    const user = await db.getUserById(req.user.id);
     res.status(201).json({ transaction: tx, balance: user.balance });
   } catch (e) {
     if (e.code === 'INSUFFICIENT_FUNDS') {
@@ -261,20 +262,20 @@ app.post('/api/transfer', auth, async (req, res) => {
 
 // ---------- Admin helpers (for manual ACH mode) ----------
 // In production protect these with strong admin auth / IP allow-list
-app.post('/api/admin/settle/:id', (req, res) => {
-  const tx = ach.settleTransaction(req.params.id);
+app.post('/api/admin/settle/:id', async (req, res) => {
+  const tx = await ach.settleTransaction(req.params.id);
   if (!tx) return res.status(404).json({ error: 'Transaction not found or already settled' });
   res.json({ transaction: tx });
 });
 
-app.post('/api/admin/fail/:id', (req, res) => {
-  const tx = ach.failTransaction(req.params.id, req.body.reason || 'Manual failure');
+app.post('/api/admin/fail/:id', async (req, res) => {
+  const tx = await ach.failTransaction(req.params.id, req.body.reason || 'Manual failure');
   if (!tx) return res.status(404).json({ error: 'Transaction not found' });
   res.json({ transaction: tx });
 });
 
-app.get('/api/admin/pending', (req, res) => {
-  const pending = db.getAllTransactions().filter(t => t.status === 'pending' || t.status === 'submitted');
+app.get('/api/admin/pending', async (req, res) => {
+  const pending = (await db.getAllTransactions()).filter(t => t.status === 'pending' || t.status === 'submitted');
   res.json({ transactions: pending });
 });
 
@@ -287,13 +288,22 @@ app.post('/api/webhooks/ach', express.raw({ type: 'application/json' }), (req, r
 });
 
 // SPA fallback (only for non-API routes that are not real files)
-app.get('*', (req, res) => {
+app.get('*', async (req, res) => {
   const indexPath = path.join(staticDir, 'index.html');
   res.sendFile(indexPath);
 });
 
-app.listen(PORT, () => {
+async function start() {
+  await db.init();
+  app.listen(PORT, () => {
   console.log(`\n  Easy Pay API running on http://localhost:${PORT}`);
   console.log(`  ACH mode: ${ach.MODE}${ach.MODE === 'automatic' ? ' (' + ach.PROVIDER + ')' : ''}`);
+  console.log(`  Database: ${db.isPostgres() ? 'Postgres (persistent)' : 'JSON files (ephemeral on Render)'}`);
   console.log(`  Frontend static dir resolved at startup\n`);
+});
+}
+
+start().catch(err => {
+  console.error("Failed to start:", err);
+  process.exit(1);
 });
