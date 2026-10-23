@@ -20,9 +20,14 @@
       <div class="nav-links" id="navLinks">
         <a href="#" onclick="showPage('home')" class="nav-link">Home</a>
         <a href="#" onclick="showPage('features')" class="nav-link">Features</a>
-        <a href="#" onclick="showPage('signin')" class="nav-link" id="navSignIn">Sign In</a>
-        <a href="#" onclick="showPage('signup')" class="btn btn-primary btn-sm" id="navSignUp">Get Started</a>
-        <a href="#" onclick="logout()" class="nav-link hidden" id="navLogout">Log Out</a>
+        <a href="#" onclick="showPage('signin')" class="nav-link nav-auth" id="navSignIn">Sign In</a>
+        <a href="#" onclick="showPage('signup')" class="btn btn-primary btn-sm nav-auth" id="navSignUp">Get Started</a>
+        <a href="#" onclick="logout()" class="nav-link nav-auth hidden" id="navLogout">Log Out</a>
+      </div>
+      <div class="nav-actions" id="navActions">
+        <a href="#" onclick="showPage('signin'); return false;" class="nav-link" id="navSignInMobile">Sign In</a>
+        <a href="#" onclick="showPage('signup'); return false;" class="btn btn-primary btn-sm" id="navSignUpMobile">Get Started</a>
+        <a href="#" onclick="logout(); return false;" class="btn btn-outline btn-sm hidden" id="navLogoutMobile">Log Out</a>
       </div>
       <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">
         <span></span><span></span><span></span>
@@ -38,6 +43,7 @@
         <p class="hero-sub">Easy Pay brings fast, secure ACH transfers to everyday banking. Send, receive, and transfer money with confidence — all in one simple dashboard.</p>
         <div class="hero-cta">
           <button class="btn btn-primary btn-lg" onclick="showPage('signup')">Open Free Account</button>
+          <button class="btn btn-outline btn-lg" onclick="showPage('signin')">Sign In</button>
           <button class="btn btn-outline btn-lg" onclick="showPage('features')">See How It Works</button>
         </div>
         <div class="hero-stats">
@@ -202,10 +208,11 @@
       <aside class="sidebar">
         <div class="sidebar-user">
           <div class="avatar" id="userAvatar">EP</div>
-          <div>
+          <div class="sidebar-user-meta">
             <div class="user-name" id="userName">User</div>
             <div class="user-email" id="userEmail">user@email.com</div>
           </div>
+          <button type="button" class="btn btn-outline btn-sm dash-logout" onclick="logout()" title="Log out">Log Out</button>
         </div>
         <nav class="sidebar-nav">
           <button class="side-link active" data-panel="overview" onclick="showPanel('overview')">Overview</button>
@@ -242,6 +249,10 @@
       </nav>
 
       <main class="dash-main">
+        <div class="dash-topbar" id="dashTopBar">
+          <span class="dash-topbar-label">Easy Pay</span>
+          <button type="button" class="btn btn-outline btn-sm" onclick="logout()">Log Out</button>
+        </div>
         <!-- Overview -->
         <div id="panel-overview" class="panel active">
           <h1 class="dash-title">Good day, <span id="greetingName">there</span></h1>
